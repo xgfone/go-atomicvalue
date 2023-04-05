@@ -22,7 +22,7 @@ import (
 
 func ExampleValue() {
 	// We declare an atomic value to store the different errors.
-	var errvalue Value
+	var errvalue Value[error]
 
 	err1 := errors.New("err1")
 	errvalue.Store(err1)
@@ -38,37 +38,33 @@ func ExampleValue() {
 }
 
 func TestValue(t *testing.T) {
-	var value Value
-	if v := value.Load(); v != nil {
-		t.Errorf("expect nil, but got %v", v)
+	var value Value[int]
+	if v := value.Load(); v != 0 {
+		t.Errorf("expect %v, but got %v", 0, v)
+	}
+
+	value = Value[int]{}
+	if v := value.Swap(123); v != 0 {
+		t.Errorf("expect %v, but got %v", 0, v)
 	}
 
 	value = NewValue(123)
-	value.Store(true)
-	if v, ok := value.Load().(bool); !ok || !v {
-		t.Errorf("expect %v, but got %v", true, v)
+	if v := value.Swap(456); v != 123 {
+		t.Errorf("expect %v, but got %v", 123, v)
 	}
-}
-
-func TestValueSwap(t *testing.T) {
-	var value Value
-	if v := value.Swap(true); v != nil {
-		t.Errorf("expect nil, but got %v", v)
+	if v := value.Load(); v != 456 {
+		t.Errorf("expect %v, but got %v", 456, v)
 	}
 
-	if v, ok := value.Swap(123).(bool); !ok || !v {
-		t.Errorf("expect %v, but got %v", true, v)
+	if value.CompareAndSwap(123, 789) {
+		t.Errorf("unexpect compare and swap, but fail")
+	} else if v := value.Load(); v != 456 {
+		t.Errorf("expect %v, but got %v", 456, v)
 	}
 
-	if !value.CompareAndSwap(123, false) {
+	if !value.CompareAndSwap(456, 789) {
 		t.Errorf("expect compare and swap, but fail")
-	}
-
-	if value.CompareAndSwap(true, false) {
-		t.Errorf("not expect compare and swap, but success")
-	}
-
-	if v, ok := value.Load().(bool); !ok || v {
-		t.Errorf("expect %v, but got %v", false, v)
+	} else if v := value.Load(); v != 789 {
+		t.Errorf("expect %v, but got %v", 789, v)
 	}
 }

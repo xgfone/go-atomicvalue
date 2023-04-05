@@ -1,6 +1,6 @@
 # Go Atomic Value [![Build Status](https://github.com/xgfone/go-atomicvalue/actions/workflows/go.yml/badge.svg)](https://github.com/xgfone/go-atomicvalue/actions/workflows/go.yml) [![GoDoc](https://pkg.go.dev/badge/github.com/xgfone/go-atomicvalue)](https://pkg.go.dev/github.com/xgfone/go-atomicvalue) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://raw.githubusercontent.com/xgfone/go-atomicvalue/master/LICENSE)
 
-Provide an atomic value, supporting Go `1.17+`, equivalent to `"sync/atomic".Value`, but more lenient, which does not require that the type of the stored value is consistent and is suitable to store an interface with the different implementation. For example,
+Provide an atomic value, supporting Go `1.18+`, same to `"sync/atomic".Value`, but more lenient, which does not require that the underlying type is consistent when storing an interface. So it is suitable to store an interface with the different implementation. For example,
 
 ```go
 package atomicvalue
@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// We declare an atomic value to store the different errors.
-	var errvalue Value
+	var errvalue Value[error]
 
 	err1 := errors.New("err1")
 	errvalue.Store(err1)

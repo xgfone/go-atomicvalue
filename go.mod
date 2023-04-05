@@ -1,3 +1,3 @@
 module github.com/xgfone/go-atomicvalue
 
-go 1.17
+go 1.18
